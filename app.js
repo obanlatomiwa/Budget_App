@@ -16,18 +16,31 @@ let budgetController = (function(){
         this.value = value
     }
 
+    // helps to calculate total expenses and income and update the data structure
+    let calculateTotal = function(type){
+        let sum = 0;
+        appData.item[type].forEach(function(cur){
+            sum += cur.value;
+        });
+        appData.total[type] = sum; 
+    }
     // Data Structure for our data: An Object
-    appData = {
+    let appData = {
         item: {
             exp: [],
             inc: []
         },
 
         total: {
-            expenseTotal: 0,
-            incomeTotal: 0
-        }
+            exp: 0,
+            inc: 0
+        },
+
+        percentage: -1,
+        budget: 0,
+        
     }
+
 
 
     return {
@@ -57,6 +70,33 @@ let budgetController = (function(){
 
         },
 
+        // calculate 
+        calculateBudget: function(){
+            // calculate total income and expenses
+            calculateTotal('exp');
+            calculateTotal('inc');
+
+            // calculate budget "total income - total expenses"
+            appData.budget = appData.total.inc - appData.total.exp;
+
+            // calculate percentage  "total expenses / total income"
+            if (appData.total.inc > 0){
+                appData.percentage = Math.round((appData.total.exp / appData.total.inc) * 100);
+            }else{
+                appData.percentage = -1;
+            }
+
+        },   
+
+        getBudget: function(){
+            return {
+                totalBudget: appData.budget,
+                totalPercentage: appData.percentage,
+                totalIncome: appData.total.inc,
+                totalExpenses: appData.total.exp
+            };
+        },
+
         testing: function(){
             console.log(appData);
         }
@@ -73,7 +113,11 @@ let UIController = (function(){
         inputValue: '.add__value',
         inputButton: '.add__btn',
         inputExpense: '.expenses__list',
-        inputIncome: '.income__list'
+        inputIncome: '.income__list',
+        budgetLabel: '.budget__value',
+        incomeLabel: '.budget__income--value',
+        expensesLabel: '.budget__expenses--value',
+        percentageLabel: '.budget__expenses--percentage',
     }
 
     return {
@@ -101,7 +145,7 @@ let UIController = (function(){
                 element = DOMStrings.inputIncome;
                 html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             }
-            
+             
 
             // update html 
             newHtml = html.replace('%id%', obj.id);
@@ -129,6 +173,21 @@ let UIController = (function(){
             fieldArray[0].focus();
 
 
+        },
+
+        // display budget
+        displayBudget: function(obj){
+            document.querySelector(DOMStrings.budgetLabel).textContent = obj.totalBudget;
+            document.querySelector(DOMStrings.incomeLabel).textContent = obj.totalIncome;
+            document.querySelector(DOMStrings.expensesLabel).textContent = obj.totalExpenses;
+
+            // adjucting the percentage display
+            if (obj.totalPercentage > 0){
+                document.querySelector(DOMStrings.percentageLabel).textContent = obj.totalPercentage + '%';
+            }else{
+                document.querySelector(DOMStrings.percentageLabel).textContent = '---';
+            }
+            
         }
 
     
@@ -156,9 +215,13 @@ let appController = (function(budgetCtrl, UICtrl){
 
     let updateBudget = function(){
         // calculate the new budget
+        budgetCtrl.calculateBudget();
 
+        // get budget 
+        let budget = budgetCtrl.getBudget();
 
         // display new budget to the UI 
+        UICtrl.displayBudget(budget);
     }
 
     // add items
@@ -189,6 +252,12 @@ let appController = (function(budgetCtrl, UICtrl){
     return {
         init: function(){
             eventListeners();
+            UICtrl.displayBudget({
+                totalBudget: 0,
+                totalPercentage: 0,
+                totalIncome: 0,
+                totalExpenses: 0
+            });
         }
     }
 })(budgetController, UIController);
