@@ -118,6 +118,7 @@ let UIController = (function(){
         incomeLabel: '.budget__income--value',
         expensesLabel: '.budget__expenses--value',
         percentageLabel: '.budget__expenses--percentage',
+        container: '.container',
     }
 
     return {
@@ -140,10 +141,10 @@ let UIController = (function(){
             // create html string
             if (type === 'exp'){
                 element = DOMStrings.inputExpense;
-                html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+                html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             }else if (type === 'inc'){
                 element = DOMStrings.inputIncome;
-                html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+                html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             }
              
 
@@ -210,6 +211,8 @@ let appController = (function(budgetCtrl, UICtrl){
                 addCtrlItem();
             }
         });
+
+        document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
     }
 
 
@@ -247,6 +250,27 @@ let appController = (function(budgetCtrl, UICtrl){
 
         }
         
+    };
+
+    let ctrlDeleteItem = function(event){
+        let ID, splitID, type;
+        ID = event.target.parentNode.parentNode.parentNode.parentNode.id;
+
+        if (ID){
+            splitID = ID.split('-');
+            type = split[0];
+            itemID = split[1];
+
+            // delete item from app data structure
+
+            // delete item from  UI
+
+
+            // update UI and Budget 
+        }
+
+
+
     }
 
     return {
