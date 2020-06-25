@@ -309,6 +309,7 @@ let UIController = (function(){
             document.querySelector(DOMStrings.inputButton).classList.toggle('red');
         },
 
+        
         // delete an item from the UI 
         deleteUIItem: function(itemID){
             let element = document.getElementById(itemID);
