@@ -86,7 +86,21 @@ let budgetController = (function(){
                 appData.percentage = -1;
             }
 
-        },   
+        },  
+        
+        deleteItem: function(type, id){
+            let obj_ids, index;
+            obj_ids = appData.item[type].map(function(current){
+                return current.id;
+            });
+
+            index = obj_ids.indexOf(id);
+
+            if (index !== -1){
+                appData.item[type].splice(index, 1);
+            };
+
+        },
 
         getBudget: function(){
             return {
@@ -189,7 +203,13 @@ let UIController = (function(){
                 document.querySelector(DOMStrings.percentageLabel).textContent = '---';
             }
             
-        }
+        },
+
+        // delete an item from the UI 
+        deleteUIItem: function(itemID){
+            let element = document.getElementById(itemID);
+            element.parentNode.removeChild(element);
+        },
 
     
     }
@@ -258,15 +278,17 @@ let appController = (function(budgetCtrl, UICtrl){
 
         if (ID){
             splitID = ID.split('-');
-            type = split[0];
-            itemID = split[1];
+            type = splitID[0];
+            itemID = parseInt(splitID[1]);
 
             // delete item from app data structure
+            budgetCtrl.deleteItem(type, itemID);
 
             // delete item from  UI
-
+            UICtrl.deleteUIItem(ID);
 
             // update UI and Budget 
+            updateBudget();
         }
 
 
